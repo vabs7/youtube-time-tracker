@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Time Tracker</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="brand">
+      <svg class="brand-icon" viewBox="0 0 24 24" fill="none">
+        <rect width="24" height="24" rx="6" fill="#FF0000"/>
+        <path d="M10 8L16 12L10 16V8Z" fill="white"/>
+        <circle cx="17" cy="17" r="5" fill="#202020" stroke="white" stroke-width="1.5"/>
+        <path d="M17 14.5V17L18.5 18.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-title">Time Tracker</span>
+    </div>
+
+    <div class="header-actions">
+      <label class="pause-switch-container" title="Pause / Resume Tracking">
+        <span class="pause-label" id="pauseStatusText">Active</span>
+        <div class="toggle-switch">
+          <input type="checkbox" id="headerPauseToggle">
+          <span class="slider"></span>
+        </div>
+      </label>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="tab-dashboard">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+      </svg>
+      Today
+    </button>
+    <button class="tab-btn" data-tab="tab-analytics">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+      </svg>
+      Trends
+    </button>
+    <button class="tab-btn" data-tab="tab-settings">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+      </svg>
+      Settings
+    </button>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="content">
+    <!-- TAB 1: DASHBOARD -->
+    <section id="tab-dashboard" class="tab-panel active">
+      <!-- Now Playing Banner -->
+      <div id="nowPlayingCard" class="now-playing">
+        <div class="pulse-dot"></div>
+        <div class="now-playing-info">
+          <div class="now-playing-label" id="nowPlayingCategory">Now Watching</div>
+          <div class="now-playing-title" id="nowPlayingTitle">Loading...</div>
+        </div>
+      </div>
+
+      <!-- Today Main Card -->
+      <div class="card today-card">
+        <div class="stat-header">Today's Total Time</div>
+        <div class="main-time" id="todayTotal">0h 0m 0s</div>
+
+        <!-- Daily Goal Bar -->
+        <div class="goal-container" id="goalContainer">
+          <div class="goal-header">
+            <span id="goalLabel">Daily Goal: None</span>
+            <span class="goal-percent" id="goalPercent">0%</span>
+          </div>
+          <div class="goal-bar-bg">
+            <div class="goal-bar-fill" id="goalBarFill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-Column Categories Breakdown -->
+      <div class="breakdown-grid">
+        <div class="breakdown-card">
+          <div class="breakdown-label">🎬 Videos</div>
+          <div class="breakdown-val" id="videosTime">0h 0m</div>
+          <div class="breakdown-sub" id="videosPercent">0%</div>
+        </div>
+
+        <div class="breakdown-card">
+          <div class="breakdown-label">⚡ Shorts</div>
+          <div class="breakdown-val" id="shortsTime">0h 0m</div>
+          <div class="breakdown-sub" id="shortsPercent">0%</div>
+        </div>
+
+        <div class="breakdown-card">
+          <div class="breakdown-label">🌐 Feed/Browse</div>
+          <div class="breakdown-val" id="browsingTime">0h 0m</div>
+          <div class="breakdown-sub" id="browsingPercent">0%</div>
+        </div>
+      </div>
+
+      <!-- Status Footer Pill -->
+      <div class="status-pill-banner">
+        <span id="comparisonText">Yesterday: --</span>
+        <span id="streakText">Active Today</span>
+      </div>
+    </section>
+
+    <!-- TAB 2: ANALYTICS & TRENDS -->
+    <section id="tab-analytics" class="tab-panel">
+      <!-- Past 7 Days Chart -->
+      <div class="chart-container">
+        <div class="chart-header">
+          <div class="chart-title">Last 7 Days</div>
+          <div class="chart-avg" id="dailyAvgLabel">Avg: 0h 0m/day</div>
+        </div>
+        <div class="bar-chart" id="weekBarChart">
+          <!-- Dynamically populated 7 bars -->
+        </div>
+      </div>
+
+      <!-- Historical Metrics Grid -->
+      <div class="history-grid">
+        <div class="history-card">
+          <div class="history-label">Past 7 Days</div>
+          <div class="history-value" id="weekly">0h 0m</div>
+        </div>
+        <div class="history-card">
+          <div class="history-label">This Month</div>
+          <div class="history-value" id="monthly">0h 0m</div>
+        </div>
+        <div class="history-card">
+          <div class="history-label">This Quarter</div>
+          <div class="history-value" id="quarterly">0h 0m</div>
+        </div>
+        <div class="history-card">
+          <div class="history-label">This Year</div>
+          <div class="history-value" id="yearly">0h 0m</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 0;">
+        <div class="history-label">All-Time Total History</div>
+        <div class="history-value" id="allTimeTotal" style="font-size: 18px; color: var(--yt-red);">0h 0m 0s</div>
+      </div>
+    </section>
+
+    <!-- TAB 3: SETTINGS -->
+    <section id="tab-settings" class="tab-panel">
+      <div class="settings-section">
+        <div class="section-title">Goals & Tracking</div>
+
+        <!-- Daily Goal Setting -->
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Daily Watch Limit</div>
+            <div class="setting-desc">Alert when reaching daily watch time</div>
+          </div>
+          <select id="dailyLimitSelect" class="setting-select">
+            <option value="0">Off (No Limit)</option>
+            <option value="30">30 minutes</option>
+            <option value="45">45 minutes</option>
+            <option value="60">1 hour</option>
+            <option value="90">1.5 hours</option>
+            <option value="120">2 hours</option>
+            <option value="180">3 hours</option>
+            <option value="240">4 hours</option>
+          </select>
+        </div>
+
+        <!-- Track Background Audio -->
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Track Background Audio</div>
+            <div class="setting-desc">Count time when tab is in background with sound playing</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="bgAudioToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Badge Display -->
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Toolbar Icon Badge</div>
+            <div class="setting-desc">Show today's watch time on the extension icon</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="badgeToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="section-title">Data & Restore History</div>
+
+        <!-- Quick Restore Button for the user's v1 file -->
+        <button class="btn btn-success" id="restoreV1Btn" style="width: 100%; margin-bottom: 8px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H8l4-4 4 4h-3v4h-2z"/>
+          </svg>
+          Sync / Restore v1 History (153 days)
+        </button>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary" id="exportCsvBtn" title="Export as CSV spreadsheet">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+            </svg>
+            CSV
+          </button>
+          <button class="btn btn-secondary" id="exportJsonBtn" title="Export complete JSON backup">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+            </svg>
+            JSON
+          </button>
+          <button class="btn btn-secondary" id="exportTxtBtn" title="Export as text summary">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+            </svg>
+            TXT
+          </button>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-secondary" id="importFileBtn" style="width: 100%;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
+            </svg>
+            Import File (.txt or .json)
+          </button>
+          <input type="file" id="importFileInput" accept=".json,.txt" style="display: none;">
+        </div>
+
+        <button class="btn btn-danger" id="clearDataBtn" style="width: 100%; margin-top: 6px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+          </svg>
+          Reset All History
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Clear Confirmation Modal -->
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal">
+      <div class="modal-title">Reset All Data?</div>
+      <div class="modal-text">
+        This will permanently delete all your YouTube watch time history. This action cannot be undone.
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="modalCancelBtn">Cancel</button>
+        <button class="btn btn-primary" id="modalConfirmBtn">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastMessage">Action completed</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
